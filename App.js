@@ -1,117 +1,57 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import * as React from 'react';
+import {Text, TouchableOpacity} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import IndexScreen from './src/screens/IndexScreen';
+import ShowScreen from './src/screens/ShowScreen';
+import EditScreen from './src/screens/EditScreen';
+import CreateScreen from './src/screens/CreateScreen';
+import {Provider} from './src/Context/BlogContext';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+const Stack = createNativeStackNavigator();
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <Provider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Index">
+          <Stack.Screen
+            name="Index"
+            component={IndexScreen}
+            options={({navigation}) => ({
+              title: 'Blog List',
+              headerRight: () => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Create')}>
+                    <Text>Create Blog</Text>
+                  </TouchableOpacity>
+                );
+              },
+            })}
+          />
+          <Stack.Screen
+            name="Show"
+            component={ShowScreen}
+            options={({navigation, route}) => ({
+              headerRight: () => {
+                console.log(route);
+                return (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('Edit', {id: route.params.id})
+                    }>
+                    <FontAwesome name="pencil" size={25} color="black" />
+                  </TouchableOpacity>
+                );
+              },
+            })}
+          />
+          <Stack.Screen name="Edit" component={EditScreen} />
+          <Stack.Screen name="Create" component={CreateScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 };
-
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
 export default App;
